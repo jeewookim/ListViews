@@ -1,6 +1,7 @@
 package com.example.a2016jkim.listviews;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -13,6 +14,8 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,9 +23,15 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
+
 import org.json.JSONArray;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     private String username = "";
@@ -31,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Firebase.setAndroidContext(this);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -51,32 +61,68 @@ public class MainActivity extends AppCompatActivity {
         // Attach the adapter to a ListView
         final ListView listView = (ListView) findViewById(R.id.lvItems);
         listView.setAdapter(adapter);
-        User newUser = new User("Temp", "hardcode");
-        adapter.add(newUser);
 
         final EditText editText = (EditText) findViewById(R.id.uedittext);
         editText.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 username = editText.getText().toString();
-                Log.i("name ", "fdgsfsdg" + username);
+                Log.i("name ", "" + username);
             }
         });
+
 
         final EditText editText2 = (EditText) findViewById(R.id.hedittext);
-        editText.setOnClickListener(new View.OnClickListener() {
+        editText2.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 hometown = editText2.getText().toString();
+                Log.i("hometown ", "" + hometown);
             }
         });
 
+        //create new
         Button button = (Button)findViewById(R.id.createnew);
+        final Firebase ref = new Firebase("https://listing-user-homes.firebaseio.com");
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View vew) {
                 User madeUser = new User(username, hometown);
+                Log.i("hometown2: ", "" +hometown);
                 adapter.add(madeUser);
-                User newUser = new User("Temp2", "hardcode2");
-                adapter.add(newUser);
+
+                ref.createUser(username, hometown, new Firebase.ValueResultHandler<Map<String, Object>>() {
+                    @Override
+                    public void onSuccess(Map<String, Object> result) {
+                        ref.child("new user").setValue("new user: " + username, "hometown: " + hometown);
+                        Log.i("hometown3:", hometown + "");
+                        Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.example.a2016jkim.listviews");
+                        startActivity(launchIntent);
+                    }
+
+                    @Override
+                    public void onError(FirebaseError firebaseError) {
+                        // there was an error
+                    }
+                });
+            }
+        });
+
+        //retrieve home
+        Button rhome = (Button) findViewById(R.id.retrievehome);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String person = username;
+                String home = "";
+
+                ref.child("new user").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
+                        System.out.println(snapshot.getValue());
+                    }
+                    @Override public void onCancelled(FirebaseError error) { }
+                });
+
+                adapter.add(new User(person, home));
             }
         });
     }

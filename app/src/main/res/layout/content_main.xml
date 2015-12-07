@@ -10,49 +10,78 @@
     tools:showIn="@layout/activity_main" tools:context=".MainActivity">
 
     <TextView
-        android:id="@+id/tvName"
+        android:id="@+id/nametitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Name"
-        android:layout_marginLeft = "20dp"/>
+        android:textSize = "15dp"
+        android:layout_marginLeft = "20dp"
+        android:layout_marginTop = "100dp"/>
     <TextView
-        android:id="@+id/tvHome"
+        android:id="@+id/hometitle"
         android:layout_marginLeft = "120dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top"
-        android:text="HomeTown" />
+        android:textSize = "15dp"
+        android:text="HomeTown"
+        android:layout_marginTop = "100dp"/>
 
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id = "@+id/uedittext"
-        android:layout_centerVertical="true"
-        android:inputType="text"/>
+        android:layout_marginLeft = "240dp"
+        android:layout_marginTop = "40dp"
+        android:text = "name"
+        android:inputType="text"
+        />
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id = "@+id/hedittext"
-        android:layout_marginTop = "300dp"
+        android:layout_marginTop = "70dp"
+        android:layout_marginLeft = "240dp"
+        android:text = "hometown"
         android:inputType="text"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
         android:id = "@+id/createnew"
+        android:text = "create new user"
+        android:textSize = "10dp"
         />
 
-
-    <ListView
+    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id = "@+id/lvItems"
-        android:layout_marginTop = "20dp"
-        android:layout_marginLeft = "1dp"
-        />
+        android:id = "@+id/retrievehome"
+        android:text = "get user's home"/>
+
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent"
+        android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:showIn="@layout/activity_main" tools:context=".MainActivity">
+
+        <ListView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id = "@+id/lvItems"
+            android:layout_marginLeft = "1dp"
+            android:layout_marginTop = "100dp"
+            />
+    </RelativeLayout>
 
 
 </RelativeLayout>

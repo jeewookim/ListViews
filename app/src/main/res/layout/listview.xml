@@ -9,15 +9,12 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/activity_main" tools:context=".MainActivity">
 
-    <TextView
+    <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id = "@+id/tvName"
+        android:id = "@+id/lvItems"
+        android:layout_alignTop = "@id/hedittext"
+        android:layout_marginLeft = "1dp"
+        android:layout_marginTop = "100dp"
         />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id = "@+id/tvHome"
-        android:layout_marginLeft = "50dp"/>
-
 </RelativeLayout>
