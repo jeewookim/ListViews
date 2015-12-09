@@ -23,6 +23,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.client.AuthData;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
@@ -32,10 +33,13 @@ import org.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MainActivity extends AppCompatActivity {
     private String username = "";
     private String hometown = "";
+    private String justname = "";
+    private String home = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,38 +90,72 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View vew) {
                 User madeUser = new User(username, hometown);
-                Log.i("hometown2: ", "" +hometown);
                 adapter.add(madeUser);
-
-                ref.createUser(username, hometown, new Firebase.ValueResultHandler<Map<String, Object>>() {
+                Log.i("In onclick: " , "true");
+                ref.authWithPassword(username, hometown, new Firebase.AuthResultHandler() {
                     @Override
-                    public void onSuccess(Map<String, Object> result) {
-                        ref.child("new user").setValue("new user: " + username, "hometown: " + hometown);
-                        Log.i("hometown3:", hometown + "");
-                        Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.example.a2016jkim.listviews");
-                        startActivity(launchIntent);
+                    public void onAuthenticated(AuthData authData) {
+                        System.out.println("User ID: " + authData.getUid() + ", Provider: " + authData.getProvider());
+                        System.out.println("Successfully authenticated");
+                        ref.child("logged in").setValue("user: " + username + " logged in");
+                        for (int x = 0; x < username.length()-1; x++)
+                        {
+                            if (!((username.substring(x,x+1)).equals("@")))
+                            {
+                                justname += username.substring(x, x+1);
+                            }
+                            else
+                            {
+                                x = username.length()-1;
+                            }
+                        }
                     }
-
                     @Override
-                    public void onError(FirebaseError firebaseError) {
-                        // there was an error
+                    public void onAuthenticationError(FirebaseError firebaseError) {
+                        final String user = username;
+                        final String home = hometown;
+                        for (int x = 0; x < user.length()-1; x++)
+                        {
+                            if (!((user.substring(x,x+1)).equals("@")))
+                            {
+                                justname += username.substring(x, x+1);
+                            }
+                            else
+                            {
+                                x = username.length()-1;
+                            }
+                        }
+                        ref.createUser(user, home, new Firebase.ValueResultHandler<Map<String, Object>>() {
+                            @Override
+                            public void onSuccess(Map<String, Object> result) {
+                                String s = ("Successfully created personal user account with uid: " + result.get("uid"));
+                                ref.child(justname).setValue( home);
+                                System.out.println(s);
+                                justname = "";
+                            }
+                            @Override
+                            public void onError(FirebaseError firebaseError) {
+                                Log.i("error while: ", "creating new");
+                            }
+                        });
                     }
                 });
             }
         });
 
         //retrieve home
+
         Button rhome = (Button) findViewById(R.id.retrievehome);
-        button.setOnClickListener(new View.OnClickListener() {
+        rhome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String person = username;
-                String home = "";
-
-                ref.child("new user").addValueEventListener(new ValueEventListener() {
+                String person = justname;
+                Log.i("just name: ", justname);
+                ref.child(person).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
                         System.out.println(snapshot.getValue());
+                        //home = (snapshot.getValue()).toString();
                     }
                     @Override public void onCancelled(FirebaseError error) { }
                 });
@@ -149,14 +187,13 @@ public class MainActivity extends AppCompatActivity {
 
     public class User {
         public String name;
-        public String hometown;
+        public String home;
 
         public User(String name, String hometown) {
             this.name = name;
-            this.hometown = hometown;
+            this.home = hometown;
         }
     }
-
 
     public class UsersAdapter extends ArrayAdapter<User> {
         public UsersAdapter(Context context, ArrayList<User> users) {
@@ -176,11 +213,10 @@ public class MainActivity extends AppCompatActivity {
             TextView tvHome = (TextView) convertView.findViewById(R.id.tvHome);
             // Populate the data into the template view using the data object
             tvName.setText(user.name);
-            tvHome.setText(user.hometown);
+            tvHome.setText(user.home);
             // Return the completed view to render on screen
             return convertView;
         }
     }
 }
-
 
