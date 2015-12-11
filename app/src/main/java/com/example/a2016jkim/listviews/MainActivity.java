@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
                         System.out.println(snapshot.getValue());
-                        //home = (snapshot.getValue()).toString();
+                        home = (snapshot.getValue()).toString();
                     }
                     @Override public void onCancelled(FirebaseError error) { }
                 });
